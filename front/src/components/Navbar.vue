@@ -3,13 +3,17 @@
     <n-layout-content>
       <n-menu v-model:value="activeKey" mode="horizontal" :options="menuOptions" />
     </n-layout-content>
-    <n-layout-sider width="100">
-      <n-icon size="40" color="#00cc00" v-if="this.$store.state.connecting[1]">
-        <bulb />
-      </n-icon>
-      <n-icon size="40" color="#ff0000" v-else>
-        <bulb-off />
-      </n-icon>
+    <n-layout-sider width="300">
+        <n-input-group>
+          <n-icon size="40" color="#00cc00" v-if="this.$store.state.connecting[1]">
+            <bulb />
+          </n-icon>
+          <n-icon size="40" color="#ff0000" v-else>
+            <bulb-off />
+          </n-icon>
+          <n-input v-model:value="server" type="text" :placeholder="server" />
+          <n-button type="primary" ghost>连接</n-button>
+        </n-input-group>
     </n-layout-sider>
   </n-layout>
 </template>
@@ -23,6 +27,9 @@ import {
   NLayoutContent,
   NLayoutSider,
   useMessage,
+  NInputGroup,
+  NInput,
+  NButton
 } from "naive-ui";
 
 import { ChartLine, CurrencyDollar, Bulb, BulbOff } from "@vicons/tabler";
@@ -92,12 +99,16 @@ export default defineComponent({
     NIcon,
     Bulb,
     BulbOff,
+    NInputGroup,
+    NInput,
+    NButton
   },
   setup() {
     return {
       menuOptions,
       timer: null,
       message: useMessage(),
+      server: ""
     };
   },
   methods: {
@@ -111,7 +122,8 @@ export default defineComponent({
     },
   },
   mounted() {
-    this.timer = setInterval(this.setTimer, 2000);
+    this.timer = setInterval(this.setTimer, 10000);
+    this.server = this.$store.state.server;
   },
   computed: {
     activeKey() {

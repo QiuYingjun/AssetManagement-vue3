@@ -2,14 +2,18 @@ import datetime
 import json
 
 from flask import Flask, request
+from flask_cors import CORS, cross_origin
 from model import session, Account, Asset, FXRate, engine, Base
 import pandas as pd
 
 app = Flask(__name__)
+cors = CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
 
 
 @app.route('/rest/ping', methods=['GET'])
 @app.route('/rest/ping/', methods=['GET'])
+@cross_origin()
 def ping():
     return ""
 
@@ -17,6 +21,7 @@ def ping():
 @app.route('/', methods=['GET'])
 @app.route('/rest', methods=['GET'])
 @app.route('/rest/', methods=['GET'])
+@cross_origin()
 def index():
     df = pd.read_sql_query('''
     SELECT asset.date, account.name, amount,account.currency as account_currency,rate,fx_rate.currency as fx_currency
@@ -39,6 +44,8 @@ def index():
         total_df['rmb'] = total_df['rmb'].round(2)
         total_df['jpy'] = total_df['jpy'].round(0)
         total_df['rate'] = total_df['rate'].round(4)
+    else:
+        total_df = pd.DataFrame(columns=['date', 'rmb', 'jpy', 'rate'])
 
     return total_df[['date', 'rmb', 'jpy', 'rate']].to_json(orient="records")
 
@@ -46,6 +53,7 @@ def index():
 @app.route('/rest/asset', methods=['GET', 'POST'])
 @app.route('/rest/asset/', methods=['GET', 'POST'])
 @app.route('/rest/asset/<int:page>/', methods=['GET', 'POST'])
+@cross_origin()
 def edit_asset(page=1):
     print(request)
     if request.method == 'POST':
@@ -97,6 +105,7 @@ def get_page(m: Base, page):
 @app.route('/edit_fxrate', methods=['GET', 'POST'])
 @app.route('/edit_fxrate/', methods=['GET', 'POST'])
 @app.route('/edit_fxrate/<int:page>/', methods=['GET', 'POST'])
+@cross_origin()
 def edit_fxrate(page=1):
     print(request.form)
     if request.method == 'POST':
@@ -135,6 +144,7 @@ def edit_fxrate(page=1):
 @app.route('/rest/account', methods=['GET', 'POST'])
 @app.route('/rest/account/', methods=['GET', 'POST'])
 @app.route('/rest/account/<int:page>/', methods=['GET', 'POST'])
+@cross_origin()
 def edit_account(page=1):
     print(request.form)
     if request.method == 'POST':

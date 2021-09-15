@@ -10,6 +10,7 @@ const store = createStore({
   state: {
     totals: [],
     connecting: [false, false],
+    server: "http://127.0.0.1:5000"
   },
   mutations: {
     updateTotal(state, data) {
@@ -21,21 +22,21 @@ const store = createStore({
   },
   getters: {},
   actions: {
-    getTotal: function (store) {
-      axios.get("/rest/").then((response) => {
-        store.commit("updateTotal", response.data);
+    getTotal: function ({commit, state}) {
+      axios.get(state.server + "/rest/").then((response) => {
+        commit("updateTotal", response.data);
       });
     },
-    getConnecting: function (store) {
+    getConnecting: function ({commit, state}) {
       axios
-        .get("/rest/ping/", { timeout: 2000 })
+        .get(state.server + "/rest/ping/", { timeout: 3000 })
         .then((response) => {
           console.log("ping");
-          store.commit("updateConnecting", true);
+          commit("updateConnecting", true);
         })
         .catch((e) => {
           console.log("ping不到");
-          store.commit("updateConnecting", false);
+          commit("updateConnecting", false);
         });
     },
   },
