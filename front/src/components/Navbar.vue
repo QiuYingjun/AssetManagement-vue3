@@ -5,14 +5,14 @@
     </n-layout-content>
     <n-layout-sider width="300">
         <n-input-group>
-          <n-icon size="40" color="#00cc00" v-if="this.$store.state.connecting[1]">
+          <n-icon size="40" color="#00cc00" v-if="connecting">
             <bulb />
           </n-icon>
           <n-icon size="40" color="#ff0000" v-else>
             <bulb-off />
           </n-icon>
-          <n-input v-model:value="server" type="text" :placeholder="server" />
-          <n-button type="primary" ghost>连接</n-button>
+          <n-input v-model:value="server" type="text" />
+          <n-button type="primary" ghost @click="updateServer">连接</n-button>
         </n-input-group>
     </n-layout-sider>
   </n-layout>
@@ -106,29 +106,42 @@ export default defineComponent({
   setup() {
     return {
       menuOptions,
-      timer: null,
       message: useMessage(),
-      server: ""
     };
+  },
+  data(){
+    return {
+      timer: null,
+      server: "",
+    }
   },
   methods: {
     setTimer() {
-      if (this.$store.state.connecting[0] && !this.$store.state.connecting[1]) {
-        this.message.error("后端已断开");
-      } else if (!this.$store.state.connecting[0] && this.$store.state.connecting[1]) {
-        this.message.success("后端已连接");
-      }
       this.$store.dispatch("getConnecting");
     },
+    updateServer() {
+      this.$store.commit("updateServer", this.server)
+    }
   },
-  mounted() {
-    this.timer = setInterval(this.setTimer, 10000);
+  beforeMount() {
     this.server = this.$store.state.server;
+    this.setTimer();
+  },
+  mounted(){
+     this.timer = setInterval(this.setTimer, 3000);
   },
   computed: {
     activeKey() {
       return this.$route.name;
     },
+    connecting() {
+      if (this.$store.state.connecting[0] && !this.$store.state.connecting[1]) {
+        this.message.error("后端已断开");
+      } else if (!this.$store.state.connecting[0] && this.$store.state.connecting[1]) {
+        this.message.success("后端已连接");
+      }
+      return this.$store.state.connecting[1];
+    }
   },
 });
 </script>
