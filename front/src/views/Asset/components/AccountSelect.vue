@@ -30,7 +30,7 @@ export default {
       try {
         var list = [];
         this.$store.state.account.data.forEach((account) => {
-          if (account.active || this.record.id > 0) {
+          if (account.is_active || this.record.id > 0) {
             list.push({ label: account.name, value: account.id });
           }
         });

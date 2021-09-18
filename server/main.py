@@ -86,26 +86,14 @@ def edit_asset():
     return json.dumps(asset_list)
 
 
-def get_page(m: Base, page):
-    all_count = session.query(m).count()
-    total_page = int(all_count / 16) + (1 if all_count % 16 > 0 else 0)
-    current_page = page
-    if page < 1:
-        current_page = 1
-    elif page > total_page:
-        current_page = total_page
-    return current_page, total_page
-
-
-@app.route('/edit_fxrate', methods=['GET', 'POST'])
-@app.route('/edit_fxrate/', methods=['GET', 'POST'])
-@app.route('/edit_fxrate/<int:page>/', methods=['GET', 'POST'])
+@app.route('/rest/fxrate', methods=['GET', 'POST'])
+@app.route('/rest/fxrate/', methods=['GET', 'POST'])
+@app.route('/rest/fxrate/<int:page>/', methods=['GET', 'POST'])
 @cross_origin()
-def edit_fxrate(page=1):
+def edit_fxrate():
     print(request.json)
     if request.method == 'POST':
-        id = int(
-            request.json['id']) if request.json['id'] != '' and request.json['id'] != 'None' else -1
+        id = int(request.json['id']) if request.json['id'] != '' and request.json['id'] != 'None' else -1
         if request.json['method'] == 'save':
             date = datetime.datetime.strptime(
                 request.json['date'], '%Y-%m-%d').date()
@@ -126,28 +114,22 @@ def edit_fxrate(page=1):
             if id > -1:
                 session.query(FXRate).filter(FXRate.id == id).delete()
                 session.commit()
-    fxrate_list = [(fx.id, fx.date, fx.rate, fx.currency) for fx in
-                   session.query(FXRate).order_by(FXRate.date.desc()).limit(16).offset((page - 1) * 16).all()]
-    if not fxrate_list:
-        fx = FXRate()
-        fxrate_list.append((fx.id, datetime.date.today(), 1, 'RMB'))
-    current_page, total_page = get_page(FXRate, page)
-    return {"fxrate_list": fxrate_list,
-            "current_page": current_page, "total_page": total_page}
+    fxrate_list = [{"id": fx.id, "date": fx.date.strftime("%Y-%m-%d"), "rate": fx.rate, "currency": fx.currency} for fx
+                   in session.query(FXRate).order_by(FXRate.date.desc()).all()]
+    return json.dumps(fxrate_list)
 
 
 @app.route('/rest/account', methods=['GET', 'POST'])
 @app.route('/rest/account/', methods=['GET', 'POST'])
 @app.route('/rest/account/<int:page>/', methods=['GET', 'POST'])
 @cross_origin()
-def edit_account(page=1):
+def edit_account():
     print(request.json)
     if request.method == 'POST':
-        id = int(
-            request.json['id']) if request.json['id'] != '' and request.json['id'] != 'None' else -1
+        id = int(request.json['id']) if request.json['id'] != '' and request.json['id'] != 'None' else -1
         if request.json['method'] == 'save':
             name = request.json['name']
-            is_active = 'is_active' in request.json
+            is_active = request.json["is_active"] if "is_active" in request.json else False
             currency = request.json['currency']
             account = Account()
             account_list = session.query(
@@ -164,10 +146,9 @@ def edit_account(page=1):
                 session.query(Account).filter(Account.id == id).delete()
                 session.commit()
     account_list = []
-    for account in session.query(Account).order_by(Account.id.asc()):
+    for account in session.query(Account).order_by(Account.id.desc()).all():
         account_list.append(
-            {"id": account.id, "name": account.name, "currency": account.currency, "active": account.is_active})
-
+            {"id": account.id, "name": account.name, "currency": account.currency, "is_active": account.is_active})
     return json.dumps(account_list)
 
 

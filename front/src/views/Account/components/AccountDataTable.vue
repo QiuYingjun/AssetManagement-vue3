@@ -7,75 +7,80 @@
     size="small"
   />
 </template>
+
 <script>
-import { NDataTable, NDatePicker, NInput } from "naive-ui";
+import { NDataTable, NDatePicker, NInput, NSwitch } from "naive-ui";
 import OperationButtons from "@/components/OperationButtons.vue";
-import AccountSelect from "./AccountSelect.vue";
 import { h, ref } from "vue";
 export default {
-  name: "AssetDataTable",
+  name: "AccountDataTable",
   components: {
     NDataTable,
     NDatePicker,
     NInput,
     OperationButtons,
-    AccountSelect,
+    NSwitch,
   },
-
   setup() {
     return { pagination: { pageSize: 10 } };
   },
+
   computed: {
     data() {
-      return this.$store.state.asset.data;
+      return this.$store.state.account.data;
     },
     columns() {
       var store = this.$store;
       return [
         {
-          title: "日期",
-          key: "date",
+          title: "账户名",
+          key: "name",
           render(row) {
-            return h(NDatePicker, {
-              value: Date.parse(row.date),
-              type: "date",
+            return h(NInput, {
+              value: row.name,
+              type: "text",
               disabled: !row.edit,
+              placeholder: "",
               "on-update:value": (value) => {
-                var date = new Date(value);
-                date.setTime(value - date.getTimezoneOffset() * 60 * 1000);
-                store.commit("asset/edit", {
+                store.commit("account/edit", {
                   id: row.id,
-                  field: "date",
-                  value: date.toISOString().split("T")[0],
+                  field: "name",
+                  value: value,
                 });
               },
             });
           },
         },
         {
-          title: "账户",
-          key: "accountId",
+          title: "货币",
+          key: "currency",
           render(row) {
-            return h(AccountSelect, { record: row });
-          },
-        },
-        {
-          title: "金额",
-          key: "amount",
-          render(row) {
-            var t = "";
-            if (row.amount) {
-              t += row.amount;
-            }
             return h(NInput, {
-              value: t,
+              value: row.currency,
               type: "text",
               disabled: !row.edit,
               placeholder: "",
               "on-update:value": (value) => {
-                store.commit("asset/edit", {
+                store.commit("account/edit", {
                   id: row.id,
-                  field: "amount",
+                  field: "currency",
+                  value: value,
+                });
+              },
+            });
+          },
+        },
+        {
+          title: "启用",
+          key: "is_active",
+          render(row) {
+            return h(NSwitch, {
+              value: row.is_active,
+              disabled: !row.edit,
+              "on-update:value": (value) => {
+                store.commit("account/edit", {
+                  id: row.id,
+                  field: "is_active",
                   value: value,
                 });
               },
@@ -89,7 +94,7 @@ export default {
           render(row) {
             return h(OperationButtons, {
               record: row,
-              table: "asset",
+              table: "account",
             });
           },
         },

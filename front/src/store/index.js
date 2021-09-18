@@ -1,11 +1,13 @@
 import { createStore } from "vuex";
 import asset from "./modules/asset";
 import account from "./modules/account";
+import fxrate from "./modules/fxrate";
 import axios from "axios";
 const store = createStore({
   modules: {
     asset,
     account,
+    fxrate,
   },
   state: {
     totals: [],
@@ -16,6 +18,7 @@ const store = createStore({
       headers: {
         "Bypass-Tunnel-Reminder": "a",
         "Access-Control-Allow-Methods": "POST,GET,PUT,DELETE,OPTIONS",
+        "User-Agent": "vue",
         // "Access-Control-Allow-Headers": "Authorization, Lang",
       },
     },

@@ -7,27 +7,26 @@
     size="small"
   />
 </template>
+
 <script>
-import { NDataTable, NDatePicker, NInput } from "naive-ui";
+import { NDataTable, NDatePicker, NInputNumber } from "naive-ui";
 import OperationButtons from "@/components/OperationButtons.vue";
-import AccountSelect from "./AccountSelect.vue";
 import { h, ref } from "vue";
 export default {
-  name: "AssetDataTable",
+  name: "FXRateDataTable",
   components: {
     NDataTable,
     NDatePicker,
-    NInput,
+    NInputNumber,
     OperationButtons,
-    AccountSelect,
   },
-
   setup() {
     return { pagination: { pageSize: 10 } };
   },
+
   computed: {
     data() {
-      return this.$store.state.asset.data;
+      return this.$store.state.fxrate.data;
     },
     columns() {
       var store = this.$store;
@@ -43,7 +42,7 @@ export default {
               "on-update:value": (value) => {
                 var date = new Date(value);
                 date.setTime(value - date.getTimezoneOffset() * 60 * 1000);
-                store.commit("asset/edit", {
+                store.commit("fxrate/edit", {
                   id: row.id,
                   field: "date",
                   value: date.toISOString().split("T")[0],
@@ -53,29 +52,23 @@ export default {
           },
         },
         {
-          title: "账户",
-          key: "accountId",
-          render(row) {
-            return h(AccountSelect, { record: row });
-          },
-        },
-        {
-          title: "金额",
-          key: "amount",
+          title: "汇率",
+          key: "rate",
           render(row) {
             var t = "";
-            if (row.amount) {
-              t += row.amount;
+            if (row.rate) {
+              t += row.rate;
             }
-            return h(NInput, {
+            return h(NInputNumber, {
               value: t,
               type: "text",
               disabled: !row.edit,
               placeholder: "",
+              "show-button": false,
               "on-update:value": (value) => {
-                store.commit("asset/edit", {
+                store.commit("fxrate/edit", {
                   id: row.id,
-                  field: "amount",
+                  field: "rate",
                   value: value,
                 });
               },
@@ -89,7 +82,7 @@ export default {
           render(row) {
             return h(OperationButtons, {
               record: row,
-              table: "asset",
+              table: "fxrate",
             });
           },
         },

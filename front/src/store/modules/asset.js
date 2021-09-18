@@ -1,54 +1,48 @@
 import axios from "axios";
-// initial state
+import common from "./common.js";
+
 const state = () => ({
   data: [],
 });
 
 // getters
 const getters = {
-  assetUrl(state, getters, rootState) {
+  url(state, getters, rootState) {
     return rootState.server + "/rest/asset/";
   },
 };
 // mutations
 const mutations = {
-  dumpData(state, data) {
-    var records = [];
-    data.forEach((element) => {
-      element.edit = false;
-      records.push(element);
-    });
-    records[0].showAdd = true;
-    state.data = records;
+  dumpData(state, records) {
+    if (records.length > 0) {
+      state.data = [];
+      common.dumpData(state.data, records);
+    } else {
+      this.commit("asset/create");
+    }
   },
   create(state) {
-    state.data[0].showAdd = false;
-    state.data.splice(0, 0, {
+    common.create(state.data, {
       id: -new Date().valueOf(),
       date: new Date().toISOString().split("T")[0],
       accountId: -1,
       amount: undefined,
-      edit: true,
-      showAdd: true,
     });
   },
   edit(state, { id, field, value }) {
-    var record = state.data.find((a) => a.id == id);
-    if (record) {
-      record[field] = value;
-    }
+    common.edit(state.data, { id, field, value });
   },
   remove(state, id) {
-    state.data = state.data.filter((a) => a.id != id);
-    if (state.data[0]) {
-      state.data[0].showAdd = true;
+    common.remove(state.data, id);
+    if (state.data.length == 0) {
+      this.commit("asset/create");
     }
   },
 };
 // actions
 const actions = {
-  getData: function ({ commit, rootState, getters }) {
-    axios.get(getters.assetUrl).then((response) => {
+  getData: function ({ commit, getters }) {
+    axios.get(getters.url).then((response) => {
       commit("dumpData", response.data);
     });
   },
@@ -62,7 +56,10 @@ const actions = {
           { root: true }
         );
         return;
-      } else if (!asset.amount || asset.amount.search(/^[0-9\+\-\*\/]+$/) < 0) {
+      } else if (
+        !asset.amount ||
+        asset.amount.search(/^[0-9\.\+\-\*\/]+$/) < 0
+      ) {
         commit(
           "pushMessage",
           { type: "error", text: "请输入金额" },
@@ -73,7 +70,7 @@ const actions = {
 
       axios
         .post(
-          getters.assetUrl,
+          getters.url,
           Object.assign(asset, { method: "save" }),
           rootState.axiosConfig
         )
@@ -103,11 +100,7 @@ const actions = {
         commit("remove", id);
       } else {
         axios
-          .post(
-            getters.assetUrl,
-            { id, method: "delete" },
-            rootState.axiosConfig
-          )
+          .post(getters.url, { id, method: "delete" }, rootState.axiosConfig)
           .then((response) => {
             commit("dumpData", response.data);
             commit(
