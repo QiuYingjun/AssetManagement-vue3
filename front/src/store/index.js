@@ -18,7 +18,7 @@ const store = createStore({
       headers: {
         "Bypass-Tunnel-Reminder": "a",
         "Access-Control-Allow-Methods": "POST,GET,PUT,DELETE,OPTIONS",
-        "User-Agent": "vue",
+        // "User-Agent": "vue",
         // "Access-Control-Allow-Headers": "Authorization, Lang",
       },
     },

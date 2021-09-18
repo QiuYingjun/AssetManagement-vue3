@@ -50,7 +50,9 @@ const menuOptions = [
         {
           to: "/",
         },
-        "总资产"
+        () => {
+          return "总资产";
+        }
       ),
     key: "home",
     icon: renderIcon(ChartLine),
@@ -62,7 +64,9 @@ const menuOptions = [
         {
           to: "/asset",
         },
-        "资产"
+        () => {
+          return "资产";
+        }
       ),
     key: "asset",
     icon: renderIcon(CurrencyDollar),
@@ -70,11 +74,13 @@ const menuOptions = [
   {
     label: () =>
       h(
-        "a",
+        RouterLink,
         {
-          href: "#/fxrate",
+          to: "/fxrate",
         },
-        "汇率"
+        () => {
+          return "汇率";
+        }
       ),
     key: "fxrate",
     icon: renderIcon(PriceChangeOutlined),
@@ -82,11 +88,13 @@ const menuOptions = [
   {
     label: () =>
       h(
-        "a",
+        RouterLink,
         {
-          href: "#/account",
+          to: "/account",
         },
-        "账户"
+        () => {
+          return "账户";
+        }
       ),
     key: "account",
     icon: renderIcon(AccountBalanceOutlined),

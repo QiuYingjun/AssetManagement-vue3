@@ -55,15 +55,9 @@ export default {
           title: "汇率",
           key: "rate",
           render(row) {
-            var t = "";
-            if (row.rate) {
-              t += row.rate;
-            }
             return h(NInputNumber, {
-              value: t,
-              type: "text",
+              value: row.rate,
               disabled: !row.edit,
-              placeholder: "",
               "show-button": false,
               "on-update:value": (value) => {
                 store.commit("fxrate/edit", {
