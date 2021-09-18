@@ -134,6 +134,10 @@ export default defineComponent({
     updateServer() {
       this.$store.commit("updateServer", this.server);
       this.$store.dispatch("getConnecting");
+      this.$store.dispatch("getTotal");
+      this.$store.dispatch("asset/getData");
+      this.$store.dispatch("fxrate/getData");
+      this.$store.dispatch("account/getData");
     },
   },
   beforeMount() {

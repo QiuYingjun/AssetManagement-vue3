@@ -24,9 +24,9 @@ const mutations = {
   create(state) {
     common.create(state.data, {
       id: -new Date().valueOf(),
-      date: new Date().toISOString().split("T")[0],
-      rate: undefined,
+      name: null,
       currency: "JPY",
+      is_active: true,
     });
   },
   edit(state, { id, field, value }) {
@@ -52,7 +52,7 @@ const actions = {
       if (!account.name || !account.currency) {
         commit(
           "pushMessage",
-          { type: "error", text: "请输入汇率" },
+          { type: "error", text: "请输入账户名和货币" },
           { root: true }
         );
         return;
