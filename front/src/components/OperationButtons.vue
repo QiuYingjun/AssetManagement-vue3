@@ -10,16 +10,28 @@
         <n-icon><pencil /></n-icon>
       </template>
     </n-button>
-    <n-button type="error" circle>
-      <template #icon>
-        <n-icon><delete-outlined /></n-icon>
+
+    <n-popconfirm
+      @positive-click="deleteData(record.id)"
+      negative-text="取消"
+      positive-text="确认"
+    >
+      <template #trigger>
+        <n-button type="error" circle>
+          <template #icon>
+            <n-icon><delete-outlined /></n-icon>
+          </template>
+        </n-button>
       </template>
-    </n-button>
-    <n-button type="info" circle :disabled="!record.edit">
+      确认删除？
+    </n-popconfirm>
+
+    <n-button type="info" circle :disabled="!record.edit" @click="saveData(record.id)">
       <template #icon>
         <n-icon><save-outlined /></n-icon>
       </template>
     </n-button>
+
     <n-button v-if="record.showAdd" circle ghost @click="create">
       <template #icon>
         <n-icon> <add-twotone /> </n-icon>
@@ -28,19 +40,33 @@
   </n-space>
 </template>
 <script>
-import { NSpace, NButton, NIcon } from "naive-ui";
+import { NSpace, NButton, NIcon, NPopconfirm } from "naive-ui";
 import { Pencil } from "@vicons/ionicons5";
 import { SaveOutlined, DeleteOutlined, AddTwotone } from "@vicons/material";
-import { mapMutations } from "vuex";
+import { mapMutations, mapActions } from "vuex";
 export default {
   name: "OperationButtons",
   props: {
     record: {
       type: Object,
     },
+    table: {
+      type: String,
+    },
   },
   methods: {
-    ...mapMutations("asset", ["edit", "create"]),
+    edit(data) {
+      this.$store.commit(this.table + "/edit", data);
+    },
+    create() {
+      this.$store.commit(this.table + "/create");
+    },
+    saveData(id) {
+      this.$store.dispatch(this.table + "/saveData", id);
+    },
+    deleteData(id) {
+      this.$store.dispatch(this.table + "/deleteData", id);
+    },
   },
   components: {
     NSpace,
@@ -50,6 +76,7 @@ export default {
     DeleteOutlined,
     SaveOutlined,
     AddTwotone,
+    NPopconfirm,
   },
 };
 </script>

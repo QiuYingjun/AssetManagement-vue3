@@ -15,9 +15,11 @@ const mutations = {
 // actions
 const actions = {
   getData: function ({ commit, rootState }) {
-    axios.get(rootState.server + "/rest/account/").then((response) => {
-      commit("dumpData", response.data);
-    });
+    axios
+      .get(rootState.server + "/rest/account/", rootState.axiosConfig)
+      .then((response) => {
+        commit("dumpData", response.data);
+      });
   },
 };
 

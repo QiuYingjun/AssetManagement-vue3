@@ -3,17 +3,21 @@
     <n-layout-content>
       <n-menu v-model:value="activeKey" mode="horizontal" :options="menuOptions" />
     </n-layout-content>
-    <n-layout-sider width="300">
-        <n-input-group>
-          <n-icon size="40" color="#00cc00" v-if="connecting">
-            <bulb />
-          </n-icon>
-          <n-icon size="40" color="#ff0000" v-else>
-            <bulb-off />
-          </n-icon>
-          <n-input v-model:value="server" type="text" />
-          <n-button type="primary" ghost @click="updateServer">连接</n-button>
-        </n-input-group>
+    <n-layout-sider width="500">
+      <n-input-group>
+        <n-input round v-model:value="server" type="text">
+          <template #prefix>
+            <n-icon size="20" color="#00cc00" v-if="connecting">
+              <bulb />
+            </n-icon>
+            <n-icon size="20" color="#ff0000" v-else>
+              <bulb-off />
+            </n-icon>
+          </template>
+        </n-input>
+        <n-button round type="primary" ghost @click="updateServer">连接</n-button>
+      </n-input-group>
+      {{ hiddenMessage }}
     </n-layout-sider>
   </n-layout>
 </template>
@@ -29,7 +33,7 @@ import {
   useMessage,
   NInputGroup,
   NInput,
-  NButton
+  NButton,
 } from "naive-ui";
 
 import { ChartLine, CurrencyDollar, Bulb, BulbOff } from "@vicons/tabler";
@@ -101,7 +105,7 @@ export default defineComponent({
     BulbOff,
     NInputGroup,
     NInput,
-    NButton
+    NButton,
   },
   setup() {
     return {
@@ -109,26 +113,31 @@ export default defineComponent({
       message: useMessage(),
     };
   },
-  data(){
+  data() {
     return {
       timer: null,
       server: "",
-    }
+    };
   },
   methods: {
     setTimer() {
       this.$store.dispatch("getConnecting");
     },
     updateServer() {
-      this.$store.commit("updateServer", this.server)
-    }
+      this.$store.commit("updateServer", this.server);
+      this.$store.dispatch("getConnecting");
+    },
   },
   beforeMount() {
+    if (localStorage.getItem("server")) {
+      this.server = localStorage.getItem("server");
+      this.updateServer();
+    }
     this.server = this.$store.state.server;
     this.setTimer();
   },
-  mounted(){
-     this.timer = setInterval(this.setTimer, 3000);
+  mounted() {
+    this.timer = setInterval(this.setTimer, 5000);
   },
   computed: {
     activeKey() {
@@ -136,12 +145,19 @@ export default defineComponent({
     },
     connecting() {
       if (this.$store.state.connecting[0] && !this.$store.state.connecting[1]) {
-        this.message.error("后端已断开");
+        this.$store.commit("pushMessage", { type: "error", text: "后端已断开" });
       } else if (!this.$store.state.connecting[0] && this.$store.state.connecting[1]) {
-        this.message.success("后端已连接");
+        this.$store.commit("pushMessage", { type: "success", text: "后端已连接" });
       }
       return this.$store.state.connecting[1];
-    }
+    },
+    hiddenMessage() {
+      if (this.$store.state.messageQueue.length > 0) {
+        var mes = this.$store.state.messageQueue[0];
+        this.message[mes.type](mes.text);
+        this.$store.commit("removeMessage");
+      }
+    },
   },
 });
 </script>

@@ -10,7 +10,16 @@ const store = createStore({
   state: {
     totals: [],
     connecting: [false, false],
-    server: "http://127.0.0.1:5000"
+    server: "http://127.0.0.1:5000",
+    axiosConfig: {
+      timeout: 3000,
+      headers: {
+        "Bypass-Tunnel-Reminder": "a",
+        "Access-Control-Allow-Methods": "POST,GET,PUT,DELETE,OPTIONS",
+        // "Access-Control-Allow-Headers": "Authorization, Lang",
+      },
+    },
+    messageQueue: [],
   },
   mutations: {
     updateTotal(state, data) {
@@ -22,25 +31,25 @@ const store = createStore({
     updateServer(state, data) {
       state.server = data;
       state.connecting = [state.connecting[1], false];
-    }
+      localStorage.setItem("server", state.server);
+    },
+    removeMessage(state) {
+      state.messageQueue.shift();
+    },
+    pushMessage(state, message) {
+      state.messageQueue.push(message);
+    },
   },
   getters: {},
   actions: {
-    getTotal: function ({commit, state}) {
-      axios.get(state.server + "/rest/").then((response) => {
+    getTotal: function ({ commit, state }) {
+      axios.get(state.server + "/rest/", state.axiosConfig).then((response) => {
         commit("updateTotal", response.data);
       });
     },
-    getConnecting: function ({commit, state}) {
+    getConnecting: function ({ commit, state }) {
       axios
-        .get(state.server + "/rest/ping/",
-          {
-            timeout: 3000,
-            headers: {
-              "Bypass-Tunnel-Reminder": "a",
-            }
-          }
-        )
+        .get(state.server + "/rest/ping/", state.axiosConfig)
         .then((response) => {
           console.log("ping");
           commit("updateConnecting", true);

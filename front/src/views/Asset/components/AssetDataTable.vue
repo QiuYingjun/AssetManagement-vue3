@@ -9,7 +9,7 @@
 </template>
 <script>
 import { NTable, NDataTable, NDatePicker, NInput } from "naive-ui";
-import OperationButtons from "./OperationButtons.vue";
+import OperationButtons from "@/components/OperationButtons.vue";
 import AccountSelect from "./AccountSelect.vue";
 
 import { h, ref } from "vue";
@@ -91,6 +91,7 @@ export default {
           render(row) {
             return h(OperationButtons, {
               record: row,
+              table: "asset",
             });
           },
         },

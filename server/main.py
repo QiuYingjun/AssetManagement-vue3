@@ -7,7 +7,7 @@ from model import session, Account, Asset, FXRate, engine, Base
 import pandas as pd
 
 app = Flask(__name__)
-cors = CORS(app)
+CORS(app, resources={r"/*": {"origins": "*"}})
 app.config['CORS_HEADERS'] = 'Content-Type'
 
 
@@ -54,17 +54,16 @@ def index():
 @app.route('/rest/asset/', methods=['GET', 'POST'])
 @app.route('/rest/asset/<int:page>/', methods=['GET', 'POST'])
 @cross_origin()
-def edit_asset(page=1):
-    print(request)
+def edit_asset():
+    print(request.json)
     if request.method == 'POST':
-        id = int(
-            request.form['id']) if request.form['id'] != '' and request.form['id'] != 'None' else -1
-        if request.form['method'] == 'save':
+        id = int(request.json['id']) if request.json['id'] != '' and request.json['id'] != 'None' else -1
+        if request.json['method'] == 'save':
             date = datetime.datetime.strptime(
-                request.form['date'], '%Y-%m-%d').date()
-            accountId = int(request.form['accountId'])
+                request.json['date'], '%Y-%m-%d').date()
+            accountId = int(request.json['accountId'])
             amount = float(
-                eval(request.form['amount'])) if request.form['amount'] != '' else 0
+                eval(request.json['amount'])) if request.json['amount'] != '' else 0
             asset = Asset()
             asset_list = session.query(Asset).filter(
                 Asset.id == id).limit(1).all()
@@ -75,14 +74,10 @@ def edit_asset(page=1):
             asset.amount = amount
             session.add(asset)
             session.commit()
-        elif request.form['method'] == 'delete':
+        elif request.json['method'] == 'delete':
             if id > -1:
                 session.query(Asset).filter(Asset.id == id).delete()
                 session.commit()
-
-    accounts = []
-    for a in session.query(Account).all():
-        accounts.append({"id": a.id, "name": a.name.encode('utf8').decode('utf8'), "active": a.is_active})
 
     asset_list = []
     for a in session.query(Asset).order_by(Asset.date.desc(), Asset.id.desc()):
@@ -107,16 +102,16 @@ def get_page(m: Base, page):
 @app.route('/edit_fxrate/<int:page>/', methods=['GET', 'POST'])
 @cross_origin()
 def edit_fxrate(page=1):
-    print(request.form)
+    print(request.json)
     if request.method == 'POST':
         id = int(
-            request.form['id']) if request.form['id'] != '' and request.form['id'] != 'None' else -1
-        if request.form['method'] == 'save':
+            request.json['id']) if request.json['id'] != '' and request.json['id'] != 'None' else -1
+        if request.json['method'] == 'save':
             date = datetime.datetime.strptime(
-                request.form['date'], '%Y-%m-%d').date()
-            rate = float(request.form['rate']
-                         ) if request.form['rate'] != '' else 0
-            currency = request.form['currency']
+                request.json['date'], '%Y-%m-%d').date()
+            rate = float(request.json['rate']
+                         ) if request.json['rate'] != '' else 0
+            currency = request.json['currency']
             fx = FXRate()
             fx_list = session.query(FXRate).filter(
                 FXRate.id == id).limit(1).all()
@@ -127,7 +122,7 @@ def edit_fxrate(page=1):
             fx.currency = currency
             session.add(fx)
             session.commit()
-        elif request.form['method'] == 'delete':
+        elif request.json['method'] == 'delete':
             if id > -1:
                 session.query(FXRate).filter(FXRate.id == id).delete()
                 session.commit()
@@ -146,14 +141,14 @@ def edit_fxrate(page=1):
 @app.route('/rest/account/<int:page>/', methods=['GET', 'POST'])
 @cross_origin()
 def edit_account(page=1):
-    print(request.form)
+    print(request.json)
     if request.method == 'POST':
         id = int(
-            request.form['id']) if request.form['id'] != '' and request.form['id'] != 'None' else -1
-        if request.form['method'] == 'save':
-            name = request.form['name']
-            is_active = 'is_active' in request.form
-            currency = request.form['currency']
+            request.json['id']) if request.json['id'] != '' and request.json['id'] != 'None' else -1
+        if request.json['method'] == 'save':
+            name = request.json['name']
+            is_active = 'is_active' in request.json
+            currency = request.json['currency']
             account = Account()
             account_list = session.query(
                 Account).filter(Account.id == id).all()
@@ -164,7 +159,7 @@ def edit_account(page=1):
             account.currency = currency
             session.add(account)
             session.commit()
-        elif request.form['method'] == 'delete':
+        elif request.json['method'] == 'delete':
             if id > -1:
                 session.query(Account).filter(Account.id == id).delete()
                 session.commit()
