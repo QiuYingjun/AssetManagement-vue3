@@ -23,7 +23,7 @@ export default {
   },
 
   setup() {
-    return { pagination: { pageSize: 10 } };
+    return { pagination: { pageSize: 20 } };
   },
   computed: {
     data() {
@@ -64,7 +64,7 @@ export default {
           key: "amount",
           render(row) {
             var t = "";
-            if (row.amount) {
+            if (row.amount || row.amount == 0) {
               t += row.amount;
             }
             return h(NInput, {
