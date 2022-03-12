@@ -1,7 +1,7 @@
 <template>
   <n-layout has-sider sider-placement="right">
     <n-layout-content>
-      <n-menu v-model:value="activeKey" mode="horizontal" :options="menuOptions" />
+      <n-menu mode="horizontal" :options="menuOptions" />
     </n-layout-content>
     <n-layout-sider width="500">
       <n-input-group>
@@ -129,7 +129,7 @@ export default defineComponent({
   },
   methods: {
     setTimer() {
-      this.$store.dispatch("getConnecting");
+      // this.$store.dispatch("getConnecting");
     },
     updateServer() {
       this.$store.commit("updateServer", this.server);
@@ -152,9 +152,6 @@ export default defineComponent({
     this.timer = setInterval(this.setTimer, 5000);
   },
   computed: {
-    activeKey() {
-      return this.$route.name;
-    },
     connecting() {
       if (this.$store.state.connecting[0] && !this.$store.state.connecting[1]) {
         this.$store.commit("pushMessage", { type: "error", text: "后端已断开" });

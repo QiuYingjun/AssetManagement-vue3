@@ -1,7 +1,5 @@
 <template>
-  <div class="chart">
-    <v-chart :option="option" />
-  </div>
+  <v-chart :option="option" style="width: 100%;height:400px;" :auto-resize="true" ref="lineChart" />
 </template>
 
 <script>
@@ -30,7 +28,7 @@ use([
   DataZoomComponent,
 ]);
 export default defineComponent({
-  name: "LineChart",
+  name: "TotalAssetLineChart",
   components: {
     VChart,
   },
@@ -151,19 +149,22 @@ export default defineComponent({
       return op;
     },
   },
-  setup() {},
+  setup() { },
   mounted() {
     if (this.$store.state.totals.length == 0) {
       this.$store.dispatch("getTotal");
+    }
+    window.addEventListener("resize", this.resizeTheChart);
+  },
+  methods: {
+    resizeTheChart() {
+      if (this.$refs && this.$refs.lineChart) {
+        this.$refs.lineChart.resize();
+      }
     }
   },
 });
 </script>
 
 <style scoped>
-div.chart {
-  height: 400px;
-  width: 700px;
-  margin: 0 auto;
-}
 </style>

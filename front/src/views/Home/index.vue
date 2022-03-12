@@ -1,26 +1,35 @@
 <template>
-  <n-grid :cols="2">
-    <n-gi>
-      <LineChart />
-    </n-gi>
-    <n-gi>
-      <TotalDataTable />
-    </n-gi>
-  </n-grid>
+  <div class="container">
+    <n-grid :cols="2">
+      <n-gi>
+        <TotalAssetLineChart />
+      </n-gi>
+      <n-gi>
+        <TotalDataTable />
+      </n-gi>
+    </n-grid>
+    <AssetBarChartByAccount />
+  </div>
 </template>
 
 <script>
-import LineChart from "./components/LineChart.vue";
+import TotalAssetLineChart from "./components/TotalAssetLineChart.vue";
+import AssetBarChartByAccount from "./components/AssetBarChartByAccount.vue";
 import TotalDataTable from "./components/TotalDataTable.vue";
 import { NGrid, NGi } from "naive-ui";
 export default {
   name: "Home",
   components: {
-    LineChart,
+    TotalAssetLineChart,
+    AssetBarChartByAccount,
     TotalDataTable,
     NGrid,
     NGi,
   },
 };
 </script>
-<style scoped></style>
+<style scoped>
+div.container {
+  width: 100%;
+}
+</style>
