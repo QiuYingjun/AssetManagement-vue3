@@ -55,9 +55,9 @@ def index():
 @app.route('/rest/asset/<int:page>/', methods=['GET', 'POST'])
 @cross_origin()
 def edit_asset():
-    print(request.json)
     if request.method == 'POST':
-        id = int(request.json['id']) if request.json['id'] != '' and request.json['id'] != 'None' else -1
+        id = int(
+            request.json['id']) if request.json['id'] != '' and request.json['id'] != 'None' else -1
         if request.json['method'] == 'save':
             date = datetime.datetime.strptime(
                 request.json['date'], '%Y-%m-%d').date()
@@ -91,9 +91,9 @@ def edit_asset():
 @app.route('/rest/fxrate/<int:page>/', methods=['GET', 'POST'])
 @cross_origin()
 def edit_fxrate():
-    print(request.json)
     if request.method == 'POST':
-        id = int(request.json['id']) if request.json['id'] != '' and request.json['id'] != 'None' else -1
+        id = int(
+            request.json['id']) if request.json['id'] != '' and request.json['id'] != 'None' else -1
         if request.json['method'] == 'save':
             date = datetime.datetime.strptime(
                 request.json['date'], '%Y-%m-%d').date()
@@ -124,9 +124,9 @@ def edit_fxrate():
 @app.route('/rest/account/<int:page>/', methods=['GET', 'POST'])
 @cross_origin()
 def edit_account():
-    print(request.json)
     if request.method == 'POST':
-        id = int(request.json['id']) if request.json['id'] != '' and request.json['id'] != 'None' else -1
+        id = int(
+            request.json['id']) if request.json['id'] != '' and request.json['id'] != 'None' else -1
         if request.json['method'] == 'save':
             name = request.json['name']
             is_active = request.json["is_active"] if "is_active" in request.json else False
@@ -153,4 +153,4 @@ def edit_account():
 
 
 if __name__ == "__main__":
-    app.run(port=5000, host='127.0.0.1', debug=True)
+    app.run(port=5000, host='127.0.0.1', debug=False)

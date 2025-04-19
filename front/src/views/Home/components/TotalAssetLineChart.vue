@@ -1,5 +1,10 @@
 <template>
-  <v-chart :option="option" style="width: 100%;height:400px;" :auto-resize="true" ref="lineChart" />
+  <v-chart
+    :option="option"
+    style="width: 100%; height: 400px"
+    :auto-resize="true"
+    ref="lineChart"
+  />
 </template>
 
 <script>
@@ -149,7 +154,7 @@ export default defineComponent({
       return op;
     },
   },
-  setup() { },
+  setup() {},
   mounted() {
     if (this.$store.state.totals.length == 0) {
       this.$store.dispatch("getTotal");
@@ -161,10 +166,9 @@ export default defineComponent({
       if (this.$refs && this.$refs.lineChart) {
         this.$refs.lineChart.resize();
       }
-    }
+    },
   },
 });
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>
