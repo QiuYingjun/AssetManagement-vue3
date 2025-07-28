@@ -8,10 +8,13 @@ if not os.path.exists('./data'):
 
 engine = create_engine('sqlite:///./data/asset.db', echo=True,
                        connect_args={"check_same_thread": False})
+                       
 DBSession = sessionmaker(bind=engine)
 Base = declarative_base()
 session = DBSession()
 
+if not os.path.exists('./data/asset.db'):
+    Base.metadata.create_all(engine)
 
 class Asset(Base):
     __tablename__ = 'asset'

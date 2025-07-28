@@ -36,4 +36,8 @@ http://127.0.0.1:5000
 npm install -g localtunnel
 lt --port 5000
 ```
+## docker
 
+```cmd
+docker-compose up --build -d
+```
