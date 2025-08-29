@@ -3,18 +3,13 @@ from sqlalchemy.orm import sessionmaker, relationship
 from sqlalchemy.ext.declarative import declarative_base
 import os
 
-if not os.path.exists('./data'):
-    os.makedirs('./data')
-
 engine = create_engine('sqlite:///./data/asset.db', echo=True,
                        connect_args={"check_same_thread": False})
-                       
+
 DBSession = sessionmaker(bind=engine)
 Base = declarative_base()
 session = DBSession()
 
-if not os.path.exists('./data/asset.db'):
-    Base.metadata.create_all(engine)
 
 class Asset(Base):
     __tablename__ = 'asset'
@@ -40,6 +35,13 @@ class FXRate(Base):
     rate = Column(Float, nullable=False)
     currency = Column(String(3), nullable=False)
 
+
+if not os.path.exists('./data'):
+    os.makedirs('./data')
+
+
+if not os.path.exists('./data/asset.db'):
+    Base.metadata.create_all(engine)
 
 if __name__ == "__main__":
     Base.metadata.create_all(engine)
