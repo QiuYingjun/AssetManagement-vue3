@@ -3,7 +3,7 @@ import json
 
 from flask import Flask, request
 from flask_cors import CORS, cross_origin
-from model import session, Account, Asset, FXRate, engine, Base
+from model import SessionLocal, Account, Asset, FXRate, engine, Base
 import pandas as pd
 
 app = Flask(__name__)
@@ -27,8 +27,8 @@ def index():
     SELECT asset.date, account.name, amount,account.currency as account_currency,rate,fx_rate.currency as fx_currency
     FROM asset LEFT JOIN account ON asset.accountId = account.id
     LEFT JOIN fx_rate ON asset.date = fx_rate.date ORDER BY asset.date''', con=engine)
-    df['rate'].fillna(method='backfill', inplace=True)
-    df['fx_currency'].fillna('JPY', inplace=True)
+    df['rate'] = df['rate'].bfill()
+    df['fx_currency'] = df['fx_currency'].fillna('JPY')
 
     df['rmb'] = df['amount']
     a = df['account_currency'] == df['fx_currency']
@@ -55,6 +55,7 @@ def index():
 @app.route('/rest/asset/<int:page>/', methods=['GET', 'POST'])
 @cross_origin()
 def edit_asset():
+    session = SessionLocal()
     if request.method == 'POST':
         id = int(
             request.json['id']) if request.json['id'] != '' and request.json['id'] != 'None' else -1
@@ -63,7 +64,7 @@ def edit_asset():
                 request.json['date'], '%Y-%m-%d').date()
             accountId = int(request.json['accountId'])
             amount = float(
-                eval(request.json['amount'])) if request.json['amount'] != '' else 0
+                eval(request.json['amount'].replace(',',''))) if request.json['amount'] != '' else 0
             asset = Asset()
             asset_list = session.query(Asset).filter(
                 Asset.id == id).limit(1).all()
@@ -91,6 +92,7 @@ def edit_asset():
 @app.route('/rest/fxrate/<int:page>/', methods=['GET', 'POST'])
 @cross_origin()
 def edit_fxrate():
+    session = SessionLocal()
     if request.method == 'POST':
         id = int(
             request.json['id']) if request.json['id'] != '' and request.json['id'] != 'None' else -1
@@ -124,6 +126,7 @@ def edit_fxrate():
 @app.route('/rest/account/<int:page>/', methods=['GET', 'POST'])
 @cross_origin()
 def edit_account():
+    session = SessionLocal()
     if request.method == 'POST':
         id = int(
             request.json['id']) if request.json['id'] != '' and request.json['id'] != 'None' else -1

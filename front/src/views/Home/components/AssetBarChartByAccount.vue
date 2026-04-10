@@ -113,7 +113,6 @@ export default defineComponent({
         });
       });
       Object.keys(dateAsset).forEach((date) => {
-        console.log(116, newDateAsset[date]);
         newDateAsset[date].push(0);
         newDateAsset[date].push(0);
       });
@@ -183,7 +182,6 @@ export default defineComponent({
       var data = this.$store.state.account.data;
       var m = [];
       data.filter((it) => it.is_active).forEach((it) => (m[it.id] = it));
-      console.log(95, m);
       return m;
     },
     option() {

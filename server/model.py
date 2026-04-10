@@ -1,5 +1,5 @@
 from sqlalchemy import Column, String, create_engine, Integer, Date, Float, ForeignKey, MetaData, text, Boolean
-from sqlalchemy.orm import sessionmaker, relationship
+from sqlalchemy.orm import sessionmaker, relationship, scoped_session
 from sqlalchemy.ext.declarative import declarative_base
 import os
 
@@ -8,7 +8,7 @@ engine = create_engine('sqlite:///./data/asset.db', echo=True,
 
 DBSession = sessionmaker(bind=engine)
 Base = declarative_base()
-session = DBSession()
+SessionLocal = scoped_session(sessionmaker(bind=engine))
 
 
 class Asset(Base):

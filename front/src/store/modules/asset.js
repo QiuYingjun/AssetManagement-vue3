@@ -58,7 +58,7 @@ const actions = {
         return;
       } else if (
         !asset.amount ||
-        asset.amount.search(/^[0-9\.\+\-\*\/]+$/) < 0
+        asset.amount.search(/^[0-9,\.\+\-\*\/]+$/) < 0
       ) {
         commit(
           "pushMessage",
